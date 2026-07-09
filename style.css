@@ -1,0 +1,174 @@
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background: #0e0e0e;
+  color: #e5e5e5;
+  min-height: 100vh;
+}
+
+header {
+  border-bottom: 1px solid #222;
+  padding: 10px 20px;
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+}
+
+header h1 {
+  font-size: 18px;
+  font-weight: 600;
+  color: #f97316;
+}
+
+header .subtitle {
+  font-size: 12px;
+  color: #555;
+}
+
+main { padding: 12px 16px; }
+
+.layout {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+}
+
+/* ---- Canvas ---- */
+.canvas-wrap {
+  flex-shrink: 0;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid #222;
+}
+
+#pong { display: block; }
+
+/* ---- Panel ---- */
+.panel {
+  flex: 1;
+  min-width: 200px;
+  max-width: 250px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* ---- Stats ---- */
+.stat-group {
+  background: #161616;
+  border: 1px solid #2a2a2a;
+  border-radius: 10px;
+  padding: 10px 12px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.stat { display: flex; flex-direction: column; gap: 2px; }
+
+.stat-label {
+  font-size: 10px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+  color: #555;
+}
+
+.stat-value {
+  font-size: 18px;
+  font-weight: 600;
+  color: #e5e5e5;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---- Chart ---- */
+.chart-wrap {
+  background: #161616;
+  border: 1px solid #2a2a2a;
+  border-radius: 10px;
+  padding: 8px 12px;
+}
+
+.chart-title {
+  font-size: 10px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+  color: #555;
+  margin-bottom: 6px;
+}
+
+#chart { display: block; width: 100%; height: auto; }
+
+/* ---- Controls card ---- */
+.controls-card {
+  background: #161616;
+  border: 1px solid #2a2a2a;
+  border-radius: 10px;
+  padding: 10px 12px;
+}
+
+.controls-title {
+  font-size: 10px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+  color: #555;
+  margin-bottom: 8px;
+}
+
+.control-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: 5px;
+}
+
+.key {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 6px;
+  background: #222;
+  border: 1px solid #3a3a3a;
+  border-radius: 4px;
+  color: #ccc;
+  min-width: 22px;
+  font-family: monospace;
+}
+
+.control-desc {
+  font-size: 11px;
+  color: #555;
+  margin-left: 2px;
+}
+
+/* ---- Info card ---- */
+.info-card {
+  background: #161616;
+  border: 1px solid #2a2a2a;
+  border-radius: 10px;
+  padding: 10px 12px;
+}
+
+.info-title {
+  font-size: 10px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+  color: #555;
+  margin-bottom: 6px;
+}
+
+.info-text {
+  font-size: 11.5px;
+  color: #666;
+  line-height: 1.6;
+}
+
+.info-text strong {
+  color: #f97316;
+}
