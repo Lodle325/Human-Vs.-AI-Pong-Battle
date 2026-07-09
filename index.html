@@ -1,140 +1,139 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Pong vs AI</title>
-  <link rel="stylesheet" href="style.css">
-</head>
-<body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pong vs AI</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <header>
+      <h1>Pong vs AI</h1>
+      <p class="subtitle">Beat the AI before it learns to beat you</p>
+    </header>
 
-  <header>
-    <h1>Pong vs AI</h1>
-    <p class="subtitle">Beat the AI before it learns to beat you</p>
-  </header>
+    <main>
+      <div class="layout">
+        <div class="canvas-wrap">
+          <canvas id="pong"></canvas>
+        </div>
 
-  <main>
-    <div class="layout">
+        <aside class="panel">
+          <div class="stat-group">
+            <div class="stat">
+              <span class="stat-label">AI generation</span>
+              <span class="stat-value" id="stat-gen">0</span>
+            </div>
+            <div class="stat">
+              <span class="stat-label">Best fitness</span>
+              <span class="stat-value" id="stat-fit">0.0</span>
+            </div>
+            <div class="stat">
+              <span class="stat-label">Balls tracked</span>
+              <span class="stat-value" id="stat-hits">0 / 0</span>
+            </div>
+            <div class="stat">
+              <span class="stat-label">Train per point</span>
+              <span class="stat-value" id="stat-tpp">—</span>
+            </div>
+          </div>
 
-      <div class="canvas-wrap">
-        <canvas id="pong"></canvas>
+          <div class="chart-wrap">
+            <p class="chart-title">AI fitness over time</p>
+            <canvas id="chart" width="240" height="80"></canvas>
+          </div>
+
+          <div class="controls-card">
+            <p class="controls-title">Controls</p>
+            <div class="control-row">
+              <span class="key">W</span><span class="key">S</span>
+              <span class="control-desc">or</span>
+              <span class="key">↑</span><span class="key">↓</span>
+              <span class="control-desc">move paddle</span>
+            </div>
+            <div class="control-row">
+              <span class="key">Space</span>
+              <span class="control-desc">serve ball</span>
+            </div>
+          </div>
+
+          <div class="info-card">
+            <p class="info-title">How the AI learns</p>
+            <p class="info-text">
+              After every scored point the AI runs
+              <strong id="info-gens">—</strong> generations of training. Each
+              generation tests <strong id="info-balls">—</strong> ball
+              trajectories across 20 different brains and keeps the best ones.
+              Watch the generation counter climb — the higher it goes, the
+              harder the AI is to beat.
+            </p>
+          </div>
+        </aside>
       </div>
+    </main>
 
-      <aside class="panel">
+    <script src="game.js"></script>
+    <script src="fitness.js"></script>
 
-        <div class="stat-group">
-          <div class="stat">
-            <span class="stat-label">AI generation</span>
-            <span class="stat-value" id="stat-gen">0</span>
-          </div>
-          <div class="stat">
-            <span class="stat-label">Best fitness</span>
-            <span class="stat-value" id="stat-fit">0.0</span>
-          </div>
-          <div class="stat">
-            <span class="stat-label">Balls tracked</span>
-            <span class="stat-value" id="stat-hits">0 / 0</span>
-          </div>
-          <div class="stat">
-            <span class="stat-label">Train per point</span>
-            <span class="stat-value" id="stat-tpp">—</span>
-          </div>
-        </div>
+    <script>
+      var canvas = document.getElementById("pong");
+      canvas.width = CANVAS_W;
+      canvas.height = CANVAS_H;
+      var ctx = canvas.getContext("2d");
 
-        <div class="chart-wrap">
-          <p class="chart-title">AI fitness over time</p>
-          <canvas id="chart" width="240" height="80"></canvas>
-        </div>
+      var chartCanvas = document.getElementById("chart");
+      var chartCtx = chartCanvas.getContext("2d");
 
-        <div class="controls-card">
-          <p class="controls-title">Controls</p>
-          <div class="control-row">
-            <span class="key">W</span><span class="key">S</span>
-            <span class="control-desc">or</span>
-            <span class="key">↑</span><span class="key">↓</span>
-            <span class="control-desc">move paddle</span>
-          </div>
-          <div class="control-row">
-            <span class="key">Space</span>
-            <span class="control-desc">serve ball</span>
-          </div>
-        </div>
+      // Populate static info
+      document.getElementById("info-gens").textContent = GENS_PER_POINT;
+      document.getElementById("info-balls").textContent = TEST_BALLS.length;
+      document.getElementById("stat-tpp").textContent = GENS_PER_POINT;
 
-        <div class="info-card">
-          <p class="info-title">How the AI learns</p>
-          <p class="info-text">
-            After every scored point the AI runs
-            <strong id="info-gens">—</strong> generations of training.
-            Each generation tests <strong id="info-balls">—</strong> ball
-            trajectories across 20 different brains and keeps the best ones.
-            Watch the generation counter climb — the higher it goes,
-            the harder the AI is to beat.
-          </p>
-        </div>
+      function updateUI() {
+        document.getElementById("stat-gen").textContent = generation;
+        document.getElementById("stat-fit").textContent =
+          bestFitness.toFixed(1);
 
-      </aside>
-    </div>
-  </main>
+        var lastGen =
+          fitnessHistory.length > 0
+            ? fitnessHistory[fitnessHistory.length - 1]
+            : null;
+        if (lastGen !== null) {
+          var lastBrain = fitnessHistory.length > 0 ? brains[0] : null;
+          document.getElementById("stat-hits").textContent =
+            Math.round(lastGen / 10) + " / " + TEST_BALLS.length;
+        }
 
-  <script src="game.js"></script>
-  <script src="fitness.js"></script>
-
-  <script>
-    var canvas = document.getElementById("pong");
-    canvas.width  = CANVAS_W;
-    canvas.height = CANVAS_H;
-    var ctx = canvas.getContext("2d");
-
-    var chartCanvas = document.getElementById("chart");
-    var chartCtx    = chartCanvas.getContext("2d");
-
-    // Populate static info
-    document.getElementById("info-gens").textContent  = GENS_PER_POINT;
-    document.getElementById("info-balls").textContent = TEST_BALLS.length;
-    document.getElementById("stat-tpp").textContent   = GENS_PER_POINT;
-
-    function updateUI() {
-      document.getElementById("stat-gen").textContent = generation;
-      document.getElementById("stat-fit").textContent = bestFitness.toFixed(1);
-
-      var lastGen = fitnessHistory.length > 0 ? fitnessHistory[fitnessHistory.length - 1] : null;
-      if (lastGen !== null) {
-        var lastBrain = fitnessHistory.length > 0 ? brains[0] : null;
-        document.getElementById("stat-hits").textContent =
-          Math.round(lastGen / 10) + " / " + TEST_BALLS.length;
+        drawChart();
       }
 
-      drawChart();
-    }
+      function drawChart() {
+        var data = fitnessHistory;
+        if (data.length < 2) return;
+        chartCtx.clearRect(0, 0, 240, 80);
+        var slice = data.slice(-40);
+        var maxVal = Math.max.apply(null, slice) || 1;
+        chartCtx.strokeStyle = "#f97316";
+        chartCtx.lineWidth = 1.5;
+        chartCtx.beginPath();
+        slice.forEach(function (v, i) {
+          var x = (i / (slice.length - 1)) * 240;
+          var y = 80 - (v / maxVal) * 72 - 4;
+          i === 0 ? chartCtx.moveTo(x, y) : chartCtx.lineTo(x, y);
+        });
+        chartCtx.stroke();
+      }
 
-    function drawChart() {
-      var data = fitnessHistory;
-      if (data.length < 2) return;
-      chartCtx.clearRect(0, 0, 240, 80);
-      var slice  = data.slice(-40);
-      var maxVal = Math.max.apply(null, slice) || 1;
-      chartCtx.strokeStyle = "#f97316";
-      chartCtx.lineWidth   = 1.5;
-      chartCtx.beginPath();
-      slice.forEach(function(v, i) {
-        var x = (i / (slice.length - 1)) * 240;
-        var y = 80 - (v / maxVal) * 72 - 4;
-        i === 0 ? chartCtx.moveTo(x, y) : chartCtx.lineTo(x, y);
-      });
-      chartCtx.stroke();
-    }
+      function loop() {
+        updateGame();
+        drawGame(ctx);
+        updateUI();
+        requestAnimationFrame(loop);
+      }
 
-    function loop() {
-      updateGame();
-      drawGame(ctx);
-      updateUI();
-      requestAnimationFrame(loop);
-    }
-
-    initBrains();
-    resetPositions();
-    loop();
-  </script>
-
-</body>
+      initBrains();
+      resetPositions();
+      loop();
+    </script>
+  </body>
 </html>
